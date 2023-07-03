@@ -17,7 +17,12 @@ class ViewController: UIViewController {
     var activatedButtons = [UIButton]()
     var solutions = [String]()
 
-    var score = 0
+    var score = 0 {
+        didSet {
+            scoreLabel.text = "Score \(score)"
+        }
+    }
+
     var level = 1
 
     override func loadView() {
@@ -156,6 +161,8 @@ class ViewController: UIViewController {
 
             currentAnswer.text = ""
             score += 1
+            // did it with didSet property observer
+            //scoreLabel.text = "Score \(score)"
 
             if score % 7 == 0 {
                 let ac = UIAlertController(title: "Well done!", message: "Are you ready for a next level?", preferredStyle: .alert)
@@ -164,6 +171,16 @@ class ViewController: UIViewController {
             }
         }
 
+    }
+
+    @objc func clearTapped(_ sender: UIButton) {
+        currentAnswer.text = ""
+
+        for button in activatedButtons {
+            button.isHidden = false
+        }
+
+        activatedButtons.removeAll()
     }
 
     func levelUp(action: UIAlertAction) {
@@ -175,16 +192,6 @@ class ViewController: UIViewController {
         for button in letterButtons {
             button.isHidden = false
         }
-    }
-
-    @objc func clearTapped(_ sender: UIButton) {
-        currentAnswer.text = ""
-
-        for button in activatedButtons {
-            button.isHidden = false
-        }
-
-        activatedButtons.removeAll()
     }
 
     func loadLevel() {
