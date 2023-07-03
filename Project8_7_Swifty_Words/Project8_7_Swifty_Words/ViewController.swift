@@ -17,6 +17,7 @@ class ViewController: UIViewController {
     var activatedButtons = [UIButton]()
     var solutions = [String]()
 
+    var correctAnswers = 0
     var score = 0 {
         didSet {
             scoreLabel.text = "Score \(score)"
@@ -60,17 +61,29 @@ class ViewController: UIViewController {
         currentAnswer.isUserInteractionEnabled = false
         view.addSubview(currentAnswer)
 
+        let buttonHeight = 44.0
+        let buttonWidth = 88.0
+        let buttonBorderWidth = 1.0
+        let buttonCornerRadius = 10.0
+        let buttonBorderColor = UIColor.lightGray.cgColor
+
         let submit = UIButton(type: .system)
         submit.translatesAutoresizingMaskIntoConstraints = false
         submit.setTitle("SUBMIT", for: .normal)
         submit.addTarget(self, action: #selector(submitTapped), for: .touchUpInside)
         view.addSubview(submit)
+        submit.layer.borderWidth = buttonBorderWidth
+        submit.layer.cornerRadius = buttonCornerRadius
+        submit.layer.borderColor = buttonBorderColor
 
         let clear = UIButton(type: .system)
         clear.translatesAutoresizingMaskIntoConstraints = false
         clear.setTitle("CLEAR", for: .normal)
         clear.addTarget(self, action: #selector(clearTapped), for: .touchUpInside)
         view.addSubview(clear)
+        clear.layer.borderWidth = buttonBorderWidth
+        clear.layer.cornerRadius = buttonCornerRadius
+        clear.layer.borderColor = buttonBorderColor
 
         let buttonsView = UIView()
         buttonsView.translatesAutoresizingMaskIntoConstraints = false
@@ -96,11 +109,13 @@ class ViewController: UIViewController {
 
             submit.topAnchor.constraint(equalTo: currentAnswer.bottomAnchor),
             submit.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: -100),
-            submit.heightAnchor.constraint(equalToConstant: 44),
+            submit.heightAnchor.constraint(equalToConstant: buttonHeight),
+            submit.widthAnchor.constraint(equalToConstant: buttonWidth),
 
             clear.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 100),
             clear.centerYAnchor.constraint(equalTo: submit.centerYAnchor),
-            clear.heightAnchor.constraint(equalToConstant: 44),
+            clear.heightAnchor.constraint(equalToConstant: buttonHeight),
+            clear.widthAnchor.constraint(equalToConstant: buttonWidth),
 
             buttonsView.heightAnchor.constraint(equalToConstant: 320),
             buttonsView.widthAnchor.constraint(equalToConstant: 750),
@@ -161,14 +176,26 @@ class ViewController: UIViewController {
 
             currentAnswer.text = ""
             score += 1
-            // did it with didSet property observer
-            //scoreLabel.text = "Score \(score)"
+            correctAnswers += 1
 
-            if score % 7 == 0 {
+            if correctAnswers % 7 == 0 {
                 let ac = UIAlertController(title: "Well done!", message: "Are you ready for a next level?", preferredStyle: .alert)
                 ac.addAction(UIAlertAction(title: "Let's go!", style: .default, handler: levelUp))
                 present(ac, animated: true)
             }
+
+
+
+        } else {
+            score -= 1
+
+            let ac = UIAlertController(title: "Wrong!", message: "That's not correct answer", preferredStyle: .alert)
+            ac.addAction(UIAlertAction(title: "Continue", style: .default, handler: { [weak self] _ in
+                self?.clearTapped(sender)
+            }))
+            present(ac, animated: true)
+
+
         }
 
     }
