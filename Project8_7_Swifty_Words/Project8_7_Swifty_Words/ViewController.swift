@@ -24,6 +24,10 @@ class ViewController: UIViewController {
         }
     }
 
+    var clueString = ""
+    var solutionsString = ""
+    var letterBits = [String]()
+
     var level = 1
 
     override func loadView() {
@@ -134,7 +138,7 @@ class ViewController: UIViewController {
             for column in 0..<5 {
                 let letterButton = UIButton(type: .system)
                 letterButton.titleLabel?.font = UIFont.systemFont(ofSize: 36)
-                letterButton.setTitle("WWW", for: .normal)
+                //letterButton.setTitle("WWW", for: .normal)
                 letterButton.addTarget(self, action: #selector(letterTapped), for: .touchUpInside)
 
                 let frame = CGRect(x: column * width, y: row * height, width: width, height: height)
@@ -151,7 +155,9 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        loadLevel()
+        //loadLevel()
+        performSelector(inBackground: #selector(ParseAndLoadLevel), with: nil)
+        performSelector(onMainThread: #selector(loadLevelUI), with: nil, waitUntilDone: false)
 
     }
 
@@ -214,17 +220,17 @@ class ViewController: UIViewController {
         level += 1
 
         solutions.removeAll(keepingCapacity: true)
-        loadLevel()
+        ParseAndLoadLevel()
 
         for button in letterButtons {
             button.isHidden = false
         }
     }
 
-    func loadLevel() {
-        var clueString = ""
-        var solutionsString = ""
-        var letterBits = [String]()
+    @objc func ParseAndLoadLevel() {
+//        var clueString = ""
+//        var solutionsString = ""
+//        var letterBits = [String]()
 
         if let levelFileURL = Bundle.main.url(forResource: "level\(level)", withExtension: "txt") {
             if let levelContents = try? String(contentsOf: levelFileURL) {
@@ -248,6 +254,9 @@ class ViewController: UIViewController {
                 }
             }
         }
+    }
+
+    @objc func loadLevelUI() {
 
         cluesLabel.text = clueString.trimmingCharacters(in: .whitespacesAndNewlines)
         answersLabel.text = solutionsString.trimmingCharacters(in: .whitespacesAndNewlines)
